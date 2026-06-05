@@ -1,6 +1,7 @@
 package dev.yourhandle.jellyfinplayer.player
 
 import android.app.PendingIntent
+import android.content.Intent
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.session.MediaSession
@@ -21,12 +22,11 @@ class PlayerService : MediaSessionService() {
             .build()
         player.setAudioAttributes(audioAttributes, true)
 
-        val launchIntent = packageManager?.getLaunchIntentForPackage(packageName)
-        val sessionIntent = if (launchIntent != null) {
-            PendingIntent.getActivity(this, 0, launchIntent, PendingIntent.FLAG_IMMUTABLE)
-        } else {
-            null
-        }
+        val intent = packageManager?.getLaunchIntentForPackage(packageName)
+            ?: Intent(this, MainActivity::class.java)
+        val sessionIntent = PendingIntent.getActivity(
+            this, 0, intent, PendingIntent.FLAG_IMMUTABLE
+        )
 
         mediaSession = MediaSession.Builder(this, player)
             .setSessionActivity(sessionIntent)
