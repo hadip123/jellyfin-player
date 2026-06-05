@@ -14,15 +14,18 @@ class PlayerService : MediaSessionService() {
     override fun onCreate() {
         super.onCreate()
 
-        val player = PlayerController.instance.getPlayer()
+        val player = PlayerController.getInstance(this).getPlayer()
         val audioAttributes = AudioAttributes.Builder()
             .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
             .setUsage(C.USAGE_MEDIA)
             .build()
         player.setAudioAttributes(audioAttributes, true)
 
-        val sessionIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let {
-            PendingIntent.getActivity(this, 0, it, PendingIntent.FLAG_IMMUTABLE)
+        val launchIntent = packageManager?.getLaunchIntentForPackage(packageName)
+        val sessionIntent = if (launchIntent != null) {
+            PendingIntent.getActivity(this, 0, launchIntent, PendingIntent.FLAG_IMMUTABLE)
+        } else {
+            null
         }
 
         mediaSession = MediaSession.Builder(this, player)

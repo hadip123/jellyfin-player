@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -47,12 +48,12 @@ private fun JellyfinPlayerApp(
     repository: JellyfinRepository,
     playerController: PlayerController
 ) {
-    val isLoggedIn = remember { repository.loadCredentials() }
+    val isLoggedIn = remember { mutableStateOf(repository.loadCredentials()) }
 
-    if (!isLoggedIn) {
+    if (!isLoggedIn.value) {
         LoginScreen(
             repository = repository,
-            onLoginSuccess = { /* navigation handled by state */ }
+            onLoginSuccess = { isLoggedIn.value = true }
         )
     } else {
         MainScreen(repository, playerController)
